@@ -8,7 +8,7 @@ describe('Node List load tests', () => {
         browser.click('=Node Graph');
     });
 
-    it('@watch should be able to handle 100 nodes quickly', () => {
+    it('should be able to handle 100 nodes quickly', () => {
         addNodes(1000);
         const start = new Date().getTime();
         body().waitUntil(() =>  body().elements('circle').value.length === 1000, 5000);

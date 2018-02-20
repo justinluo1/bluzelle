@@ -9,6 +9,13 @@ describe('Node graph tab', () => {
         browser.click('=Node Graph');
     });
 
+    describe('multiple nodes', () => {
+        it('@watch should show the number of nodes set by the emulator', () => {
+            emulator.setMaxNodes(5);
+            browser.waitUntil(() => browser.elements('circle').value.length === 10);
+        });
+    });
+
     describe('individual nodes', () => {
         _.each({green: 'alive', red: 'dead', blue: 'new'}, (state, color) => {
             it(`should display specs when mouseover on ${color} node`, () => {
