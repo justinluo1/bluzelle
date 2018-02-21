@@ -5,10 +5,10 @@ describe('web page header', () => {
         expect(browser.getAttribute('div>img', 'src')).to.contain('data');
     });
 
-    it('@watch tabs should exist', () => {
-        ['Log', 'Message List', 'Node List', 'Node Graph'].forEach(tabName => {
-            browser.waitForExist(`a=${tabName}`);
-            browser.click(`a=${tabName}`);
+    it('should have all the tabs', () => {
+        browser.waitForExist('ul.nav');
+        ['Log', 'Message List', 'Node List', 'Node Graph'].forEach( (tabName, idx) => {
+            expect(browser.elements('ul.nav>li').value[idx].getText()).to.eq(tabName);
         });
     });
 });
