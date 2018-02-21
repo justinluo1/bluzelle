@@ -3,7 +3,7 @@ module.exports = {
         waitforTimeout: 5000,
         desiredCapabilities: {
             chromeOptions: {
-                args: [/*'auto-open-devtools-for-tabs',*/  'use-fake-device-for-media-stream', 'use-fake-ui-for-media-stream']
+                args: ['']
             }
         },
     },

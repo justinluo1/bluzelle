@@ -5,12 +5,12 @@ describe('Node graph tab', () => {
     require('../getBaseElement')('body');
 
     beforeEach(() => {
-        browser.waitForExist('=Node Graph', 2000);
+        browser.waitForExist('=Node Graph');
         browser.click('=Node Graph');
     });
 
     describe('multiple nodes', () => {
-        it('@watch should show the number of nodes set by the emulator', () => {
+        it('should show the number of nodes set by the emulator', () => {
             emulator.setMaxNodes(5);
             browser.waitUntil(() => browser.elements('circle').value.length === 10);
         });
@@ -29,7 +29,7 @@ describe('Node graph tab', () => {
 });
 
 const checkInfoTable = (address, value) => {
-    browser.waitForExist(`g#node-${address}`, 2000);
+    browser.waitForExist(`g#node-${address}`);
     browser.moveToObject(`g#node-${address}`);
-    browser.waitForExist(`td=${value}`, 2000);
+    browser.waitForExist(`td=${value}`);
 }
