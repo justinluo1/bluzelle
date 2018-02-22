@@ -25,7 +25,7 @@ describe('Node List tab', () => {
             }, 5000, 'expected nodes to equal number set by emulator');
         });
 
-        it('should show all nodes to be alive', () => {
+        it('should show all nodes to be new then alive', () => {
             browser.waitUntil( () =>
                 browser.elements('div.react-grid-Canvas>div>div').value.length === 5
             );
@@ -36,6 +36,6 @@ describe('Node List tab', () => {
                         .waitForExist(`div=${status}`)
                 )
             );
-        })
+        });
     });
 });
