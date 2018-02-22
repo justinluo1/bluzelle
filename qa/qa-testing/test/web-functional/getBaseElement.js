@@ -4,7 +4,7 @@ module.exports = (selector) => {
     });
 
     return () => {
-        browser.waitForExist(selector, 2000);
+        browser.waitForExist(selector);
         return browser.element(selector);
     };
 };
