@@ -6,6 +6,7 @@ const _ = require('lodash');
 const fp = require('lodash/fp');
 const nodes = require('./NodeStore').nodes;
 const {behaveRandomly} = require('./Values');
+const {observable, autorun} = require('mobx');
 
 module.exports = function Node(port) {
 
@@ -14,7 +15,7 @@ module.exports = function Node(port) {
         ip: '127.0.0.1',
         port: port,
         available: 100,
-        used: _.random(40, 70),
+        used: observable(_.random(40, 70)),
         isLeader: false,
         alive: true,
         die: () => {
@@ -106,31 +107,47 @@ module.exports = function Node(port) {
         }
     }());
 
-        (function updateStorageUsed(direction = 1) {
-            if(behaveRandomly.get()) {
-                me.used += direction;
-                sendToClients('updateNodes', [_.pick(me, 'ip', 'port', 'address', 'used', 'available')]);
+    (function updateStorageUsed(direction = 1) {
+        if(behaveRandomly.get()) {
+            me.used += direction;
+            sendToClients('updateNodes', [_.pick(me, 'ip', 'port', 'address', 'used', 'available')]);
 
-                me.used < 40 && (direction = _.random(1, 2));
-                me.used > 70 && (direction = _.random(-1, -2));
+            me.used < 40 && (direction = _.random(1, 2));
+            me.used > 70 && (direction = _.random(-1, -2));
+        }
+        setTimeout(() => me.isShutdown || updateStorageUsed(direction), 1000);
+    }());
+
+    (function sendMessage() {
+        setTimeout(() => {
+            if(behaveRandomly.get() && nodes.size > 1) {
+                me.isShutdown || sendToClients('messages', [
+                    {
+                        srcAddr: getOtherRandomNode().address,
+                        timestamp: new Date().getTime(),
+                        body: {something: `sent - ${_.uniqueId()}`}
+                    }
+                ]);
             }
-            setTimeout(() => me.isShutdown || updateStorageUsed(direction), 1000);
-        }());
+            me.isShutdown || sendMessage();
+        }, _.random(5000, 10000));
+    }());
 
-        (function sendMessage() {
-            setTimeout(() => {
-                if(behaveRandomly.get() && nodes.size > 1) {
-                    me.isShutdown || sendToClients('messages', [
-                        {
-                            srcAddr: getOtherRandomNode().address,
-                            timestamp: new Date().getTime(),
-                            body: {something: `sent - ${_.uniqueId()}`}
-                        }
-                    ]);
+    autorun(function logUsageWarning() {
+        if (me.used.get() > 85) {
+            sendToClients('log', [
+                {
+                    level: 'warn',
+                    timestamp: new Date().toISOString(),
+                    message: `Usage is at ${me.used.get()}`,
+                    node: me
                 }
-                me.isShutdown || sendMessage();
-            }, _.random(5000, 10000));
-        }());
+            ]);
+            sendToClients('updateNodes', [
+                _.pick(me, 'ip', 'port', 'address', 'used', 'available')
+            ]);
+        };
+    });
 
     function getPeerInfo(node) {
         return nodes.values().filter(peer => peer.address !== node.address).map(n => _.pick(n, 'address', 'ip', 'port'));
