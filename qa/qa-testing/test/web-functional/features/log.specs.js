@@ -20,13 +20,14 @@ describe('Log tab', () => {
             });
         });
 
-
         it('@watch should log storage warning', () => {
-            header().waitForExist('div.react-grid-Canvas>div>div');
+            // emulator.getNodes()[0].setUsage(90);
             emulator.getNodes()[0].used.set(90);
-            console.log(emulator.getNodes()[0].used.get());
+            emulator.getNodes()[0].used.get();
+            header().waitForExist('div.react-grid-Canvas>div>div');
             browser.elements('div.react-grid-Canvas>div>div').value[1]
                 .waitForExist('div*=Usage is at');
+
         });
     });
 });

@@ -33,7 +33,8 @@ module.exports = function Node(port) {
                 me.getWsServer().shutDown();
                 me.getHttpServer().close();
             }, 200);
-        }
+        },
+        setUsage: val => updateUsage(val)
     });
 
     const me = nodes.get(port);
@@ -143,15 +144,21 @@ module.exports = function Node(port) {
                     node: me
                 }
             ]);
-            sendToClients('updateNodes', [
-                _.pick(me, 'ip', 'port', 'address', 'used', 'available')
-            ]);
+
         };
     });
 
+    function updateUsage(val) {
+        me.used = val;
+        sendToClients('updateNodes', [
+            _.pick(me, 'ip', 'port', 'address', 'used', 'available')
+        ]);
+        console.log('Usage set at: ', val)
+    };
+
     function getPeerInfo(node) {
         return nodes.values().filter(peer => peer.address !== node.address).map(n => _.pick(n, 'address', 'ip', 'port'));
-    }
+    };
 
     const getOtherRandomNode = () => {
         const n = getRandomNode();
