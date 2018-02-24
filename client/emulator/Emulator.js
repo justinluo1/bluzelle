@@ -20,7 +20,7 @@ module.exports = {
     shutdown: () => nodes.values().map(node => node.shutdown()),
     start: _.once(start),
     behaveRandomly: (v) => behaveRandomly.set(v),
-    isRandom: () => behaveRandomly.get(),
+    isRandom: () => behaveRandomly.get()
 };
 
 
